@@ -274,11 +274,13 @@ void setup() {
     key.keyByte[i] = 0xFF;
   }
 
-  // RESET --- ALLE DREI KNÖPFE BEIM STARTEN GEDRÜCKT HALTEN -> alle bekannten
-  // Karten werden gelöscht
-  if (digitalRead(BUTTON_PAUSE) == LOW && digitalRead(BUTTON_UP) == LOW &&
-      digitalRead(BUTTON_DOWN) == LOW) {
-    Serial.println(F("Reset -> EEPROM wird gelöscht"));
+  // Hold all three buttons to reset EEPROM
+  if (
+    digitalRead(BUTTON_PAUSE) == LOW
+    && digitalRead(BUTTON_UP) == LOW
+    && digitalRead(BUTTON_DOWN) == LOW
+  ) {
+    Serial.println(F("Reset: Clearing EEPROM"));
     for (int i = 0; i < EEPROM.length(); i++) {
       EEPROM.write(i, 0);
     }
