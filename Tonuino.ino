@@ -10,7 +10,8 @@ SoftwareSerial mySoftwareSerial(2, 3); // RX, TX
 uint16_t numTracksInFolder;
 uint16_t currentTrack;
 
-// this object stores nfc tag data
+/* Object to save data read from the NFC card
+ */
 struct nfcTagObject {
   uint32_t cookie;
   uint8_t version;
@@ -22,43 +23,56 @@ struct nfcTagObject {
 nfcTagObject myCard;
 
 static void nextTrack(uint16_t track);
-int voiceMenu(int numberOfOptions, int startMessage, int messageOffset,
-              bool preview = false, int previewFromFolder = 0);
+int voiceMenu(
+  int numberOfOptions,
+  int startMessage,
+  int messageOffset,
+  bool preview = false,
+  int previewFromFolder = 0
+);
 
 bool knownCard = false;
 
-// implement a notification class,
-// its member methods will get called
-//
+/* DfMp3 Notification class
+ *
+ * The member functions are called for their respective events
+ */
 class Mp3Notify {
 public:
   static void OnError(uint16_t errorCode) {
     // see DfMp3_Error for code meaning
     Serial.println();
-    Serial.print("Com Error ");
+    Serial.print(F("COM Error: "));
     Serial.println(errorCode);
   }
+
   static void OnPlayFinished(uint16_t track) {
-    Serial.print("Track beendet");
+    Serial.print(F("Track beendet: "));
     Serial.println(track);
     delay(100);
     nextTrack(track);
   }
+
   static void OnCardOnline(uint16_t code) {
     Serial.println(F("SD Karte online "));
   }
+
   static void OnCardInserted(uint16_t code) {
     Serial.println(F("SD Karte bereit "));
   }
+
   static void OnCardRemoved(uint16_t code) {
     Serial.println(F("SD Karte entfernt "));
   }
+
   static void OnUsbOnline(uint16_t code) {
       Serial.println(F("USB online "));
   }
+
   static void OnUsbInserted(uint16_t code) {
       Serial.println(F("USB bereit "));
   }
+
   static void OnUsbRemoved(uint16_t code) {
     Serial.println(F("USB entfernt "));
   }
@@ -230,11 +244,16 @@ void setup() {
 
 }
 
+/* Arduino main loop
+ *
+ * Called once setup() has finished
+ */
 void loop() {
   do {
+    // Start DFPlayer
     mp3.loop();
-    // Buttons werden nun über JS_Button gehandelt, dadurch kann jede Taste
-    // doppelt belegt werden
+
+    // Pass button handling to JC library
     pauseButton.read();
     upButton.read();
     downButton.read();
@@ -247,14 +266,17 @@ void loop() {
           mp3.start();
       }
       ignorePauseButton = false;
-    } else if (pauseButton.pressedFor(LONG_PRESS) &&
-               ignorePauseButton == false) {
+    }
+    else if (
+      pauseButton.pressedFor(LONG_PRESS) &&
+      ignorePauseButton == false
+    ) {
       if (isPlaying())
         mp3.playAdvertisement(currentTrack);
       else {
         knownCard = false;
         mp3.playMp3FolderTrack(800);
-        Serial.println(F("Karte resetten..."));
+        Serial.println(F("Resetting card ..."));
         resetCard();
         mfrc522.PICC_HaltA();
         mfrc522.PCD_StopCrypto1();
@@ -360,8 +382,16 @@ void loop() {
   mfrc522.PCD_StopCrypto1();
 }
 
-int voiceMenu(int numberOfOptions, int startMessage, int messageOffset,
-              bool preview = false, int previewFromFolder = 0) {
+/*
+ *
+ */
+int voiceMenu(
+  int numberOfOptions,
+  int startMessage,
+  int messageOffset,
+  bool preview,
+  int previewFromFolder
+) {
   int returnValue = 0;
   if (startMessage != 0)
     mp3.playMp3FolderTrack(startMessage);
@@ -407,7 +437,7 @@ int voiceMenu(int numberOfOptions, int startMessage, int messageOffset,
       } else
         ignoreUpButton = false;
     }
-    
+
     if (downButton.pressedFor(LONG_PRESS)) {
       returnValue = max(returnValue - 10, 1);
       mp3.playMp3FolderTrack(messageOffset + returnValue);
