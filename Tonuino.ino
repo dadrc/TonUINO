@@ -208,17 +208,16 @@ byte blockAddr = 4;
 byte trailerBlock = 7;
 MFRC522::StatusCode status;
 
-#define buttonPause A0
-#define buttonUp A1
-#define buttonDown A2
-#define busyPin 4
-
+#define BUTTON_PAUSE A0
+#define BUTTON_UP A1
+#define BUTTON_DOWN A2
+#define BUSY_PIN 4
 #define LONG_PRESS 1000
 #define REPEAT_ACTION 250
 
-Button pauseButton(buttonPause);
-Button upButton(buttonUp);
-Button downButton(buttonDown);
+Button pauseButton(BUTTON_PAUSE);
+Button upButton(BUTTON_UP);
+Button downButton(BUTTON_DOWN);
 bool ignorePauseButton = false;
 bool ignoreUpButton = false;
 bool ignoreDownButton = false;
@@ -228,7 +227,13 @@ uint16_t downStep = LONG_PRESS;
 
 uint8_t numberOfCards = 0;
 
-bool isPlaying() { return !digitalRead(busyPin); }
+/* Retrieve DFPlayer playback status
+ *
+ * @return boolean True if a track is playing, false otherwise
+ */
+bool isPlaying() {
+  return !digitalRead(BUSY_PIN);
+}
 
 void setup() {
 
@@ -239,13 +244,13 @@ void setup() {
   Serial.println(F("TonUINO Version 2.0"));
   Serial.println(F("(c) Thorsten Voß"));
 
-  // Knöpfe mit PullUp
-  pinMode(buttonPause, INPUT_PULLUP);
-  pinMode(buttonUp, INPUT_PULLUP);
-  pinMode(buttonDown, INPUT_PULLUP);
+  // Set buttons to use PULLUP
+  pinMode(BUTTON_PAUSE, INPUT_PULLUP);
+  pinMode(BUTTON_UP, INPUT_PULLUP);
+  pinMode(BUTTON_DOWN, INPUT_PULLUP);
 
-  // Busy Pin
-  pinMode(busyPin, INPUT);
+  // Create pin to get busy status from DFPlayer
+  pinMode(BUSY_PIN, INPUT);
 
   // DFPlayer Mini initialisieren
   mp3.begin();
@@ -262,8 +267,8 @@ void setup() {
 
   // RESET --- ALLE DREI KNÖPFE BEIM STARTEN GEDRÜCKT HALTEN -> alle bekannten
   // Karten werden gelöscht
-  if (digitalRead(buttonPause) == LOW && digitalRead(buttonUp) == LOW &&
-      digitalRead(buttonDown) == LOW) {
+  if (digitalRead(BUTTON_PAUSE) == LOW && digitalRead(BUTTON_UP) == LOW &&
+      digitalRead(BUTTON_DOWN) == LOW) {
     Serial.println(F("Reset -> EEPROM wird gelöscht"));
     for (int i = 0; i < EEPROM.length(); i++) {
       EEPROM.write(i, 0);
