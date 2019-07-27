@@ -79,12 +79,13 @@ public:
 };
 
 static DFMiniMp3<SoftwareSerial, Mp3Notify> mp3(mySoftwareSerial);
+static uint16_t _lastTrackFinished;
+
 
 /* Go to next track, according to playback mode
  *
  * Triggered by button presses or the previous track ending
  */
-static uint16_t _lastTrackFinished;
 static void nextTrack(uint16_t track) {
     // Ignore nextTrack() calls during card learning
   if (!knownCard) return;
