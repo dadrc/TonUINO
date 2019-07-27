@@ -235,12 +235,18 @@ bool isPlaying() {
   return !digitalRead(BUSY_PIN);
 }
 
+
+/* Arduino setup function
+ *
+ * Automatically called on power on
+ */
 void setup() {
+  // Initialize serial connection for debug output
+  Serial.begin(115200);
+  // Seed random generator for random track function
+  randomSeed(analogRead(A0));
 
-  Serial.begin(115200); // Es gibt ein paar Debug Ausgaben über die serielle
-                        // Schnittstelle
-  randomSeed(analogRead(A0)); // Zufallsgenerator initialisieren
-
+  // Print banner on serial connection
   Serial.println(F("TonUINO Version 2.0"));
   Serial.println(F("(c) Thorsten Voß"));
 
@@ -252,15 +258,14 @@ void setup() {
   // Create pin to get busy status from DFPlayer
   pinMode(BUSY_PIN, INPUT);
 
-  // DFPlayer Mini initialisieren
+  // Initialize DFPlayer
   mp3.begin();
   mp3.setVolume(15);
 
   // NFC Leser initialisieren
   SPI.begin();        // Init SPI bus
   mfrc522.PCD_Init(); // Init MFRC522
-  mfrc522
-      .PCD_DumpVersionToSerial(); // Show details of PCD - MFRC522 Card Reader
+  mfrc522.PCD_DumpVersionToSerial(); // Show details of PCD - MFRC522 Card Reader
   for (byte i = 0; i < 6; i++) {
     key.keyByte[i] = 0xFF;
   }
