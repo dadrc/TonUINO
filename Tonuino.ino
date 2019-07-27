@@ -111,20 +111,21 @@ static void nextTrack(uint16_t track) {
       }
       break;
     // Party mode
-    case 3:
-      // Randomize new track
-      uint16_t oldTrack = currentTrack;
-      currentTrack = random(1, numTracksInFolder + 1);
+    case 3: {
+        // Randomize new track
+        uint16_t oldTrack = currentTrack;
+        currentTrack = random(1, numTracksInFolder + 1);
 
-      // If a song would be played twice, play next track instead
-      if (currentTrack == oldTrack) currentTrack++;
-      // If song to played does not exist, play first track instead
-      if (currentTrack >= numTracksInFolder) currentTrack = 1;
+        // If a song would be played twice, play next track instead
+        if (currentTrack == oldTrack) currentTrack++;
+        // If song to played does not exist, play first track instead
+        if (currentTrack >= numTracksInFolder) currentTrack = 1;
 
-      mp3.playFolderTrack(myCard.folder, currentTrack);
+        mp3.playFolderTrack(myCard.folder, currentTrack);
 
-      Serial.print(F("Party mode: Playing track "));
-      Serial.println(currentTrack);
+        Serial.print(F("Party mode: Playing track "));
+        Serial.println(currentTrack);
+      }
       break;
     // Single track mode
     case 4:
