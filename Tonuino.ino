@@ -264,7 +264,7 @@ void setup() {
 
   // Initialize DFPlayer
   mp3.begin();
-  mp3.setVolume(15);
+  mp3.setVolume(10);
 
   // NFC Leser initialisieren
   SPI.begin();        // Init SPI bus
