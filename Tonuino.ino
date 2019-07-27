@@ -172,6 +172,7 @@ MFRC522::StatusCode status;
 #define busyPin 4
 
 #define LONG_PRESS 1000
+#define REPEAT_ACTION 250
 
 Button pauseButton(buttonPause);
 Button upButton(buttonUp);
@@ -179,6 +180,9 @@ Button downButton(buttonDown);
 bool ignorePauseButton = false;
 bool ignoreUpButton = false;
 bool ignoreDownButton = false;
+
+uint16_t upStep = LONG_PRESS;
+uint16_t downStep = LONG_PRESS;
 
 uint8_t numberOfCards = 0;
 
@@ -258,28 +262,41 @@ void loop() {
       ignorePauseButton = true;
     }
 
-    if (upButton.pressedFor(LONG_PRESS)) {
-      Serial.println(F("Volume Up"));
+    if (upButton.pressedFor(upStep)) {
+      Serial.println(F("Volume up"));
       mp3.increaseVolume();
+      // Delay next volume step
+      upStep += REPEAT_ACTION;
+      // Don't play next track if volume has been adjusted
       ignoreUpButton = true;
-    } else if (upButton.wasReleased()) {
-      if (!ignoreUpButton)
-        nextTrack(random(65536));
-      else
+    }
+    else if (upButton.wasReleased()) {
+      if (!ignoreUpButton) {
+        nextTrack(mp3.getCurrentTrack());
+      }
+      else {
         ignoreUpButton = false;
+        upStep = LONG_PRESS;
+      }
     }
 
-    if (downButton.pressedFor(LONG_PRESS)) {
-      Serial.println(F("Volume Down"));
+    if (downButton.pressedFor(downStep)) {
+      Serial.println(F("Volume down"));
       mp3.decreaseVolume();
+      // Delay next volume step
+      downStep += REPEAT_ACTION;
+      // Don't play previous track if volume has been adjusted
       ignoreDownButton = true;
-    } else if (downButton.wasReleased()) {
-      if (!ignoreDownButton)
-        previousTrack();
-      else
-        ignoreDownButton = false;
     }
-    // Ende der Buttons
+    else if (downButton.wasReleased()) {
+      if (!ignoreDownButton){
+        previousTrack();
+      }
+      else {
+        ignoreDownButton = false;
+        downStep = LONG_PRESS;
+      }
+    }
   } while (!mfrc522.PICC_IsNewCardPresent());
 
   // RFID Karte wurde aufgelegt
