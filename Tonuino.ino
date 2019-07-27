@@ -217,7 +217,7 @@ MFRC522::StatusCode status;
 #define BUTTON_DOWN A2
 #define BUSY_PIN 4
 #define LONG_PRESS 1000
-#define REPEAT_ACTION 250
+#define REPEAT_ACTION 300
 
 Button pauseButton(BUTTON_PAUSE);
 Button upButton(BUTTON_UP);
