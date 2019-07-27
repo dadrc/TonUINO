@@ -150,7 +150,8 @@ static void nextTrack(uint16_t track) {
       break;
     // Unknown mode
     default:
-      Serial.println(F("Unknown card mode!"));
+      Serial.print(F("Unknown card mode: "));
+      Serial.println(myCard.mode);
   }
 }
 
@@ -195,7 +196,8 @@ static void previousTrack() {
       break;
     // Unknown mode
     default:
-      Serial.println(F("Unknown card mode!"));
+      Serial.print(F("Unknown card mode: "));
+      Serial.println(myCard.mode);
   }
 }
 
