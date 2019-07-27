@@ -589,7 +589,7 @@ bool readCard(nfcTagObject *nfcTag) {
   Serial.print(F("Reading data from block "));
   Serial.print(blockAddr);
   Serial.println(F(" ..."));
-  status = (MFRC522::StatusCode)mfrc522.MIFARE_Read(blockAddr, buffer, &size);
+  status = (MFRC522::StatusCode) mfrc522.MIFARE_Read(blockAddr, buffer, &size);
   if (status != MFRC522::STATUS_OK) {
     returnValue = false;
     Serial.print(F("MIFARE_Read() failed: "));
@@ -603,10 +603,10 @@ bool readCard(nfcTagObject *nfcTag) {
   Serial.println();
 
   uint32_t tempCookie;
-  tempCookie = (uint32_t)buffer[0] << 24;
-  tempCookie += (uint32_t)buffer[1] << 16;
-  tempCookie += (uint32_t)buffer[2] << 8;
-  tempCookie += (uint32_t)buffer[3];
+  tempCookie = (uint32_t) buffer[0] << 24;
+  tempCookie += (uint32_t) buffer[1] << 16;
+  tempCookie += (uint32_t) buffer[2] << 8;
+  tempCookie += (uint32_t) buffer[3];
 
   nfcTag->cookie = tempCookie;
   nfcTag->version = buffer[4];
